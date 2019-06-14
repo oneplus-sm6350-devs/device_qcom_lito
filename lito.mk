@@ -1,3 +1,6 @@
+# Enable AVB 2.0
+BOARD_AVB_ENABLE := true
+
 # Temporary bring-up config -->
 ALLOW_MISSING_DEPENDENCIES := true
 
@@ -6,7 +9,11 @@ BUILD_BROKEN_DUP_RULES := true
 TEMPORARY_DISABLE_PATH_RESTRICTIONS := true
 export TEMPORARY_DISABLE_PATH_RESTRICTIONS
 
-BOARD_AVB_ENABLE := true
+# Enable chain partition for system, to facilitate system-only OTA in Treble.
+BOARD_AVB_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
+BOARD_AVB_SYSTEM_ALGORITHM := SHA256_RSA2048
+BOARD_AVB_SYSTEM_ROLLBACK_INDEX := 0
+BOARD_AVB_SYSTEM_ROLLBACK_INDEX_LOCATION := 1
 
 BOARD_HAVE_BLUETOOTH := false
 BOARD_HAVE_QCOM_FM := false
@@ -34,17 +41,12 @@ PRODUCT_BRAND := qti
 PRODUCT_MODEL := Lito for arm64
 
 
-###########
-# Initial bring-up flags
-# TODO: Delete once bring-up is complete
-
-TARGET_HAS_LOW_RAM := true
-# Enable flag to support slow emulated device
-TARGET_PRESIL_SLOW_BOARD := true
-
 TARGET_USES_AOSP := true
 TARGET_USES_AOSP_FOR_AUDIO := false
 TARGET_USES_QCOM_BSP := false
+
+# RRO configuration
+TARGET_USES_RRO := true
 
 ###########
 #QMAA flags starts
@@ -59,13 +61,13 @@ TARGET_USES_QMAA := true
 #true means overriding global QMAA for this tech area
 #false means using global, no override
 
-TARGET_USES_QMAA_OVERRIDE_DISPLAY := false
+TARGET_USES_QMAA_OVERRIDE_DISPLAY := true
 TARGET_USES_QMAA_OVERRIDE_AUDIO   := true
-TARGET_USES_QMAA_OVERRIDE_VIDEO   := false
+TARGET_USES_QMAA_OVERRIDE_VIDEO   := true
 TARGET_USES_QMAA_OVERRIDE_CAMERA  := true
 TARGET_USES_QMAA_OVERRIDE_GFX     := true
-TARGET_USES_QMAA_OVERRIDE_WFD     := false
-TARGET_USES_QMAA_OVERRIDE_SENSORS := false
+TARGET_USES_QMAA_OVERRIDE_WFD     := true
+TARGET_USES_QMAA_OVERRIDE_SENSORS := true
 
 ###########
 #QMAA flags ends
@@ -98,6 +100,9 @@ QMAA_ENABLED_HAL_MODULES :=
 #Default vendor image configuration
 ENABLE_VENDOR_IMAGE := true
 
+# Default A/B configuration
+ENABLE_AB ?= true
+
 # default is nosdcard, S/W button enabled in resource
 PRODUCT_CHARACTERISTICS := nosdcard
 
@@ -109,6 +114,7 @@ PRODUCT_PACKAGES += libGLES_android
 PRODUCT_PACKAGES += fs_config_files
 PRODUCT_PACKAGES += gpio-keys.kl
 
+ifeq ($(ENABLE_AB), true)
 # A/B related packages
 PRODUCT_PACKAGES += update_engine \
     update_engine_client \
@@ -121,7 +127,7 @@ PRODUCT_HOST_PACKAGES += \
     brillo_update_payload
 # Boot control HAL test app
 PRODUCT_PACKAGES_DEBUG += bootctl
-
+endif
 DEVICE_FRAMEWORK_MANIFEST_FILE := device/qcom/lito/framework_manifest.xml
 
 DEVICE_MANIFEST_FILE := device/qcom/lito/manifest.xml
@@ -159,6 +165,22 @@ AUDIO_DLKM += audio_snd_event.ko
 KERNEL_MODULES_INSTALL := dlkm
 KERNEL_MODULES_OUT := out/target/product/$(PRODUCT_NAME)/$(KERNEL_MODULES_INSTALL)/lib/modules
 
+#FEATURE_OPENGLES_EXTENSION_PACK support string config file
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.opengles.aep.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.opengles.aep.xml
+
+# Powerhint configuration file
+PRODUCT_COPY_FILES += device/qcom/lito/powerhint.xml:$(TARGET_COPY_OUT_VENDOR)/etc/powerhint.xml
+
+#
+# system prop for opengles version
+#
+# 196608 is decimal for 0x30000 to report version 3
+# 196609 is decimal for 0x30001 to report version 3.1
+# 196610 is decimal for 0x30002 to report version 3.2
+PRODUCT_PROPERTY_OVERRIDES  += \
+    ro.opengles.version=196610
+
 # Audio configuration file
 -include $(TOPDIR)hardware/qcom/audio/configs/lito/lito.mk
 -include $(TOPDIR)vendor/qcom/opensource/audio-hal/primary-hal/configs/lito/lito.mk
@@ -174,6 +196,10 @@ TARGET_MOUNT_POINTS_SYMLINKS := false
 
 PRODUCT_BOOT_JARS += telephony-ext
 PRODUCT_PACKAGES += telephony-ext
+
+# Vendor property to enable advanced network scanning
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.vendor.radio.enableadvancedscan=true
 
 #----------------------------------------------------------------------
 # wlan specific
