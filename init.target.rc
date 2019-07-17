@@ -94,18 +94,8 @@ on charger
 
 service vendor.adsprpcd /vendor/bin/adsprpcd
    class main
-   user system
+   user root
    group media
-
-service vendor.adsprpcd_audiopd /vendor/bin/adsprpcd audiopd
-   class main
-   user media
-   group media
-
-service vendor.adsprpcd_sensorspd /vendor/bin/adsprpcd sensorspd
-   class main
-   user system
-   group system
 
 service vendor.cdsprpcd /vendor/bin/cdsprpcd
    class main
