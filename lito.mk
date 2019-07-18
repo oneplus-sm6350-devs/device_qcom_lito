@@ -4,6 +4,22 @@ BOARD_AVB_ENABLE := true
 # Temporary bring-up config -->
 ALLOW_MISSING_DEPENDENCIES := true
 
+# For QSSI builds, we should skip building the system image. Instead we build the
+# "non-system" images (that we support).
+
+PRODUCT_BUILD_SYSTEM_IMAGE := false
+PRODUCT_BUILD_SYSTEM_OTHER_IMAGE := false
+PRODUCT_BUILD_VENDOR_IMAGE := true
+PRODUCT_BUILD_PRODUCT_IMAGE := false
+PRODUCT_BUILD_PRODUCT_SERVICES_IMAGE := false
+PRODUCT_BUILD_ODM_IMAGE := false
+PRODUCT_BUILD_CACHE_IMAGE := false
+PRODUCT_BUILD_RAMDISK_IMAGE := true
+PRODUCT_BUILD_USERDATA_IMAGE := true
+
+TARGET_SKIP_OTA_PACKAGE := true
+TARGET_SKIP_OTATOOLS_PACKAGE := true
+
 BUILD_BROKEN_PHONY_TARGETS := true
 BUILD_BROKEN_DUP_RULES := true
 TEMPORARY_DISABLE_PATH_RESTRICTIONS := true
@@ -17,9 +33,11 @@ BOARD_AVB_SYSTEM_ROLLBACK_INDEX_LOCATION := 1
 
 BOARD_HAVE_BLUETOOTH := false
 BOARD_HAVE_QCOM_FM := false
-TARGET_DISABLE_PERF_OPTIMIATIONS := true
+TARGET_DISABLE_PERF_OPTIMIATIONS := false
 
-$(call inherit-product, device/qcom/common/common64.mk)
+TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
+
+$(call inherit-product, device/qcom/qssi/common64.mk)
 # Temporary bring-up config <--
 
 $(call inherit-product, frameworks/native/build/phone-xhdpi-2048-dalvik-heap.mk)
@@ -68,6 +86,7 @@ TARGET_USES_QMAA_OVERRIDE_CAMERA  := true
 TARGET_USES_QMAA_OVERRIDE_GFX     := true
 TARGET_USES_QMAA_OVERRIDE_WFD     := true
 TARGET_USES_QMAA_OVERRIDE_SENSORS := true
+TARGET_USES_QMAA_OVERRIDE_PERF    := true
 
 ###########
 #QMAA flags ends
@@ -167,12 +186,21 @@ AUDIO_DLKM += audio_snd_event.ko
 KERNEL_MODULES_INSTALL := dlkm
 KERNEL_MODULES_OUT := out/target/product/$(PRODUCT_NAME)/$(KERNEL_MODULES_INSTALL)/lib/modules
 
+# MIDI feature
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.software.midi.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.midi.xml
+
 #FEATURE_OPENGLES_EXTENSION_PACK support string config file
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.opengles.aep.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.opengles.aep.xml
 
 # Powerhint configuration file
 PRODUCT_COPY_FILES += device/qcom/lito/powerhint.xml:$(TARGET_COPY_OUT_VENDOR)/etc/powerhint.xml
+
+# Vibrator
+PRODUCT_PACKAGES += \
+    android.hardware.vibrator@1.0-impl \
+    android.hardware.vibrator@1.0-service \
 
 #
 # system prop for opengles version
@@ -201,6 +229,8 @@ TARGET_MOUNT_POINTS_SYMLINKS := false
 
 PRODUCT_BOOT_JARS += telephony-ext
 PRODUCT_PACKAGES += telephony-ext
+
+PRODUCT_BOOT_JARS += tcmiface
 
 # Vendor property to enable advanced network scanning
 PRODUCT_PROPERTY_OVERRIDES += \
