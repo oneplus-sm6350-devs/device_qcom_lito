@@ -5,7 +5,7 @@ BOARD_AVB_ENABLE := true
 ENABLE_AB ?= true
 
 # Default Dynamic Partition feature configuration
-BOARD_DYNAMIC_PARTITION_ENABLE ?= false
+BOARD_DYNAMIC_PARTITION_ENABLE ?= true
 
 # Temporary bring-up config -->
 ALLOW_MISSING_DEPENDENCIES := true
@@ -112,6 +112,7 @@ TARGET_USES_QMAA_OVERRIDE_GFX     := true
 TARGET_USES_QMAA_OVERRIDE_WFD     := true
 TARGET_USES_QMAA_OVERRIDE_SENSORS := true
 TARGET_USES_QMAA_OVERRIDE_PERF    := true
+TARGET_USES_QMAA_OVERRIDE_VPP     := true
 
 ###########
 #QMAA flags ends
