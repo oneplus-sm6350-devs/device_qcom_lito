@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
+# Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -96,6 +96,15 @@ on property:vendor.display.lcd_density=560
 
 on property:vendor.display.lcd_density=640
    setprop dalvik.vm.heapgrowthlimit 512m
+
+on property:vendor.display.lcd_density=480
+   setprop dalvik.vm.heapgrowthlimit 128m
+
+on property:vendor.display.lcd_density=240
+   setprop dalvik.vm.heapgrowthlimit 96m
+
+on property:vendor.display.lcd_density=160
+   setprop dalvik.vm.heapgrowthlimit 96m
 
 on boot && property:persist.vendor.usb.controller.default=*
     setprop vendor.usb.controller ${persist.vendor.usb.controller.default}
