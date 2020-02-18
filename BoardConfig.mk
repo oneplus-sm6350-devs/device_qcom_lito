@@ -85,7 +85,11 @@ BOARD_BUILD_SYSTEM_ROOT_IMAGE := true
 else
 # Define the Dynamic Partition sizes and groups.
     ifeq ($(ENABLE_AB), true)
-        BOARD_SUPER_PARTITION_SIZE := 12884901888
+        ifeq ($(ENABLE_VIRTUAL_AB), true)
+            BOARD_SUPER_PARTITION_SIZE := 6442450944
+        else
+            BOARD_SUPER_PARTITION_SIZE := 12884901888
+        endif
     else
         BOARD_SUPER_PARTITION_SIZE := 6442450944
     endif
@@ -256,5 +260,6 @@ endif
 BUILD_BROKEN_NINJA_USES_ENV_VARS := SDCLANG_AE_CONFIG SDCLANG_CONFIG SDCLANG_SA_ENABLED SDCLANG_CONFIG_AOSP
 # We need this to invoke make to build the kernel, etc.
 BUILD_BROKEN_NINJA_USES_ENV_VARS += TEMPORARY_DISABLE_PATH_RESTRICTIONS
+BUILD_BROKEN_PREBUILT_ELF_FILES := true
 
 include device/qcom/sepolicy/SEPolicy.mk
