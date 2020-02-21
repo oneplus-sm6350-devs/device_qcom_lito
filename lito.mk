@@ -274,6 +274,10 @@ ro.crypto.allow_encrypt_override = true
 #----------------------------------------------------------------------
 include device/qcom/wlan/lito/wlan.mk
 
+# Target specific Netflix custom property
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.netflix.bsp_rev=Q7250-19133-1
+
 ###################################################################################
 # This is the End of target.mk file.
 # Now, Pickup other split product.mk files:
