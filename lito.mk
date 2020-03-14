@@ -157,6 +157,7 @@ PRODUCT_PACKAGES += \
   update_engine_sideload
 endif
 DEVICE_FRAMEWORK_MANIFEST_FILE := device/qcom/lito/framework_manifest.xml
+DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE := vendor/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml
 
 DEVICE_MANIFEST_FILE := device/qcom/lito/manifest.xml
 ifeq ($(ENABLE_AB), true)
@@ -273,6 +274,10 @@ ro.crypto.allow_encrypt_override = true
 # wlan specific
 #----------------------------------------------------------------------
 include device/qcom/wlan/lito/wlan.mk
+
+# Target specific Netflix custom property
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.netflix.bsp_rev=Q7250-19133-1
 
 ###################################################################################
 # This is the End of target.mk file.
