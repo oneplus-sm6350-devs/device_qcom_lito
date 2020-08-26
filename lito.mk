@@ -281,7 +281,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.netflix.bsp_rev=Q7250-19133-1
 
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.sf.lcd_density=560
+    ro.sf.lcd_density=480
 
 ###################################################################################
 # This is the End of target.mk file.
